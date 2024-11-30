@@ -21,8 +21,9 @@ async def get_async_data():
     # all_data = pd.ExcelFile('https://docs.google.com/spreadsheets/d/e/2PACX-1vShcAJbZ3TzjO8x2JGP9_zZ_32sr8etktW2OjczyaiaOjop9-Vlt9tVtqLw6kdelg/pub?output=xlsx')
     # Узнаём какие листы есть
     # Получаем список названий всех листов
-
     sheet_names = all_data.sheet_names
+    # json
+    groups_data = {"groups": []}
 
     # Теперь можем пройти по каждому листу
     for sheet_name in sheet_names:
@@ -107,27 +108,14 @@ async def get_async_data():
                 # Путь к файлу groups.json
                 groups_file_path = "groups.json"
 
-                # Проверяем наличие файла groups.json
-                if os.path.exists(groups_file_path):
-                    # Открываем и читаем данные из файла
-                    with open(groups_file_path, 'r', encoding='utf-8') as f:
-                        groups_data = json.load(f)
-
-                    # Проверяем наличие ключа "groups"
-                    if "groups" not in groups_data:
-                        groups_data["groups"] = []
-                else:
-                    # Если файл не существует, создаем структуру данных
-                    groups_data = {"groups": []}
-
-                # Поиск группы в списке (чтобы обновить данные, если группа уже существует)
+                # Записываем в память
                 group_found = False
                 for group_info in groups_data["groups"]:
                     if group_info["group"] == group:
                         # Обновляем данные группы
                         group_info["prevWeek"] = {"from": start_date_str, "to": end_date_str, "days": schedule}
                         group_found = True
-                        print(f"Данные для группы '{group}' обновлены в файле 'groups.json'")
+                        print(f"Данные для группы '{group}' обновлены в памяти")
                         break
 
                 # Если группа не найдена, добавляем новую группу с расписанием
@@ -139,12 +127,7 @@ async def get_async_data():
                         "nextWeek": ""
                     }
                     groups_data["groups"].append(new_group_info)
-                    print(f"Группа '{group}' добавлена в файл 'groups.json'")
-
-                # Записываем обновленные данные обратно в файл groups.json
-                with open(groups_file_path, 'w', encoding='utf-8') as f:
-                    json.dump(groups_data, f, ensure_ascii=False)
-                    print(f"Данные записаны в файл 'groups.json'")
+                    print(f"Группа '{group}' добавлена в память")
 
                 # Удаляем временные переменные, если нужно
                 del dict_rasp_group
@@ -203,27 +186,15 @@ async def get_async_data():
                 # Путь к файлу groups.json
                 groups_file_path = "groups.json"
 
-                # Проверяем наличие файла groups.json
-                if os.path.exists(groups_file_path):
-                    # Открываем и читаем данные из файла
-                    with open(groups_file_path, 'r', encoding='utf-8') as f:
-                        groups_data = json.load(f)
 
-                    # Проверяем наличие ключа "groups"
-                    if "groups" not in groups_data:
-                        groups_data["groups"] = []
-                else:
-                    # Если файл не существует, создаем структуру данных
-                    groups_data = {"groups": []}
-
-                # Поиск группы в списке (чтобы обновить данные, если группа уже существует)
+                # Записываем в память
                 group_found = False
                 for group_info in groups_data["groups"]:
                     if group_info["group"] == group:
                         # Обновляем данные группы
                         group_info["currentWeek"] = {"from": start_date_str, "to": end_date_str, "days": schedule}
                         group_found = True
-                        print(f"Данные для группы '{group}' обновлены в файле 'groups.json'")
+                        print(f"Данные для группы '{group}' обновлены в памяти")
                         break
 
                 # Если группа не найдена, добавляем новую группу с расписанием
@@ -235,12 +206,7 @@ async def get_async_data():
                         "nextWeek": ""
                     }
                     groups_data["groups"].append(new_group_info)
-                    print(f"Группа '{group}' добавлена в файл 'groups.json'")
-
-                # Записываем обновленные данные обратно в файл groups.json
-                with open(groups_file_path, 'w', encoding='utf-8') as f:
-                    json.dump(groups_data, f, ensure_ascii=False)
-                    print(f"Данные записаны в файл 'groups.json'")
+                    print(f"Группа '{group}' добавлена в память")
 
                 # Удаляем временные переменные, если нужно
                 del dict_rasp_group
@@ -299,27 +265,15 @@ async def get_async_data():
                 # Путь к файлу groups.json
                 groups_file_path = "groups.json"
 
-                # Проверяем наличие файла groups.json
-                if os.path.exists(groups_file_path):
-                    # Открываем и читаем данные из файла
-                    with open(groups_file_path, 'r', encoding='utf-8') as f:
-                        groups_data = json.load(f)
 
-                    # Проверяем наличие ключа "groups"
-                    if "groups" not in groups_data:
-                        groups_data["groups"] = []
-                else:
-                    # Если файл не существует, создаем структуру данных
-                    groups_data = {"groups": []}
-
-                # Поиск группы в списке (чтобы обновить данные, если группа уже существует)
+                # Записываем в память
                 group_found = False
                 for group_info in groups_data["groups"]:
                     if group_info["group"] == group:
                         # Обновляем данные группы
                         group_info["nextWeek"] = {"from": start_date_str, "to": end_date_str, "days": schedule}
                         group_found = True
-                        print(f"Данные для группы '{group}' обновлены в файле 'groups.json'")
+                        print(f"Данные для группы '{group}' обновлены в памяти")
                         break
 
                 # Если группа не найдена, добавляем новую группу с расписанием
@@ -331,15 +285,12 @@ async def get_async_data():
                         "nextWeek": {"from": start_date_str, "to": end_date_str, "days": schedule}
                     }
                     groups_data["groups"].append(new_group_info)
-                    print(f"Группа '{group}' добавлена в файл 'groups.json'")
+                    print(f"Группа '{group}' добавлена в память")
 
-                # Записываем обновленные данные обратно в файл groups.json
-                with open(groups_file_path, 'w', encoding='utf-8') as f:
-                    json.dump(groups_data, f, ensure_ascii=False)
-                    print(f"Данные записаны в файл 'groups.json'")
 
                 # Удаляем временные переменные, если нужно
                 del dict_rasp_group
         else:
             print("Это ни текущая, ни следующая, ни предыдущая неделе.")
     return groups_data
+
