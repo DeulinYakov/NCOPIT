@@ -2,6 +2,8 @@
 import datetime
 # Для даты в расписание
 import re
+# Для проверки обновлений
+import hashlib
 
 
 # Функция открывает ячейку [0,11] и из 'РАСПИСАНИЕ ЗАНЯТИЙ с 25.03 по 30.03.2024 г.' получает дату с помощью регулярного выражения
@@ -140,3 +142,16 @@ def get_place_by_room(room):
         return "assembly-hall"
     else:
         return "college"
+
+
+# Перевод в хеш
+def calculate_content_hash(content):
+    # Создаем объект хеша SHA-256
+    hash_object = hashlib.sha256()
+
+    # Обновляем хеш-объект с содержимым файла
+    hash_object.update(content)
+
+    # Получаем хеш в виде строки
+    content_hash = hash_object.hexdigest()
+    return content_hash
