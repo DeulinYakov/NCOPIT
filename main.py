@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
+
 import asyncio
 # Для парсинга
 import numpy as np
@@ -7,7 +9,7 @@ import pandas as pd
 import requests
 import hashlib
 # Для работы с json
-import json
+import orjson
 import os
 
 # Внешние функции
@@ -30,7 +32,13 @@ all_data = pd.ExcelFile(url_schedule)
 # Асинхронная функция обработки GET-запроса
 @app.get("/")
 async def get_async_data():
-    return groups_data
+    return orjson.dumps(groups_data).decode("utf-8")
+
+
+# Асинхронная функция обработки GET-запроса
+@app.get("/api")
+async def get_async():
+    return {'message': 'Hello World'}
 
 
 previous_hash = None
@@ -216,7 +224,8 @@ async def periodic_task():
                         for group_info in groups_data["groups"]:
                             if group_info["group"] == group:
                                 # Обновляем данные группы
-                                group_info["currentWeek"] = {"from": start_date_str, "to": end_date_str, "days": schedule}
+                                group_info["currentWeek"] = {"from": start_date_str, "to": end_date_str,
+                                                             "days": schedule}
                                 group_found = True
                                 print(f"Данные для группы '{group}' обновлены в памяти")
                                 break
@@ -316,7 +325,7 @@ async def periodic_task():
 
         # Обновляем предыдущий хэш
         previous_hash = current_hash
-        await asyncio.sleep(60)  # Ожидание 60 секунд
+        await asyncio.sleep(1800)  # Ожидание 60 секунд
 
 
 # Запуск фоновой задачи при старте приложения
