@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 import asyncio
 # Для парсинга
@@ -16,6 +17,14 @@ import os
 import functions as fn
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],                     # Список разрешённых источников
+    allow_credentials=True,                  # Разрешить передачу cookies и авторизационных заголовков
+    allow_methods=["*"],                     # Разрешить все методы HTTP (GET, POST, PUT, DELETE и т.д.)
+    allow_headers=["*"],                     # Разрешить все заголовки
+)
 
 # Переменная для json
 groups_data = {"groups": []}
@@ -47,7 +56,10 @@ previous_hash = None
 # Асинхронная задача, которая запускается при старте и каждые 60 секунд
 async def periodic_task():
     global previous_hash
+    global groups_data
     while True:
+        # тестово (костыль)
+        groups_data = {"groups": []}
         # Получаем файл exls по ссылке
         response = requests.get(url_schedule)
         # Сохраняем файл в объекте excel_data
@@ -58,7 +70,7 @@ async def periodic_task():
 
         # Сравниваем текущий хэш с предыдущим
         if previous_hash is None or current_hash != previous_hash:
-            print("Файл проверен впервые. Хэш:", current_hash)
+            # print("Файл проверен впервые. Хэш:", current_hash)
             # Получаем весь файл без конкретного листа
             # Узнаём какие листы есть
             # Получаем список названий всех листов
@@ -94,7 +106,7 @@ async def periodic_task():
                 # Сравниваем ваши данные с датами начала и конца следующей, текущей и предыдущей недели
                 if start_of_prev_week <= start_date <= end_of_prev_week:
                     # Если неделя прошлая
-                    print("Неделя прошлая")
+                    # print("Неделя прошлая")
                     # получаем список групп
                     groups = fn.getting_groups(data)
                     # парсим и преобразуем в json
@@ -151,7 +163,7 @@ async def periodic_task():
                                 # Обновляем данные группы
                                 group_info["prevWeek"] = {"from": start_date_str, "to": end_date_str, "days": schedule}
                                 group_found = True
-                                print(f"Данные для группы '{group}' обновлены в памяти")
+                                # print(f"Данные для группы '{group}' обновлены в памяти")
                                 break
 
                         # Если группа не найдена, добавляем новую группу с расписанием
@@ -163,13 +175,13 @@ async def periodic_task():
                                 "nextWeek": ""
                             }
                             groups_data["groups"].append(new_group_info)
-                            print(f"Группа '{group}' добавлена в память")
+                            # print(f"Группа '{group}' добавлена в память")
 
                         # Удаляем временные переменные, если нужно
                         del dict_rasp_group
                 elif start_of_week <= start_date <= end_of_week:
                     # Если неделя текущая
-                    print("Неделя текущая")
+                    # print("Неделя текущая")
                     # получаем список групп
                     groups = fn.getting_groups(data)
                     # парсим и преобразуем в json
@@ -227,7 +239,7 @@ async def periodic_task():
                                 group_info["currentWeek"] = {"from": start_date_str, "to": end_date_str,
                                                              "days": schedule}
                                 group_found = True
-                                print(f"Данные для группы '{group}' обновлены в памяти")
+                                # print(f"Данные для группы '{group}' обновлены в памяти")
                                 break
 
                         # Если группа не найдена, добавляем новую группу с расписанием
@@ -239,13 +251,13 @@ async def periodic_task():
                                 "nextWeek": ""
                             }
                             groups_data["groups"].append(new_group_info)
-                            print(f"Группа '{group}' добавлена в память")
+                            # print(f"Группа '{group}' добавлена в память")
 
                         # Удаляем временные переменные, если нужно
                         del dict_rasp_group
                 elif start_of_next_week <= start_date <= end_of_next_week:
                     # Если неделя следующая
-                    print("следующая неделя")
+                    # print("следующая неделя")
                     # получаем список групп
                     groups = fn.getting_groups(data)
                     # парсим и преобразуем в json
@@ -302,7 +314,7 @@ async def periodic_task():
                                 # Обновляем данные группы
                                 group_info["nextWeek"] = {"from": start_date_str, "to": end_date_str, "days": schedule}
                                 group_found = True
-                                print(f"Данные для группы '{group}' обновлены в памяти")
+                                # print(f"Данные для группы '{group}' обновлены в памяти")
                                 break
 
                         # Если группа не найдена, добавляем новую группу с расписанием
@@ -314,18 +326,20 @@ async def periodic_task():
                                 "nextWeek": {"from": start_date_str, "to": end_date_str, "days": schedule}
                             }
                             groups_data["groups"].append(new_group_info)
-                            print(f"Группа '{group}' добавлена в память")
+                            # print(f"Группа '{group}' добавлена в память")
 
                         # Удаляем временные переменные, если нужно
                         del dict_rasp_group
                 else:
-                    print("Это ни текущая, ни следующая, ни предыдущая неделе.")
+                    # print("Это ни текущая, ни следующая, ни предыдущая неделе.")
+                    pass
         else:
-            print("Файл не изменился.")
+            # print("Файл не изменился.")
+            pass
 
         # Обновляем предыдущий хэш
         previous_hash = current_hash
-        await asyncio.sleep(1800)  # Ожидание 60 секунд
+        await asyncio.sleep(1800)  # Ожидание 1800
 
 
 # Запуск фоновой задачи при старте приложения
